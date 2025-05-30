@@ -8,7 +8,7 @@ Lab 03 - Part 1
 
 #include <avr/io.h>
 
-void delay_timer0()
+void delay_timer0_2ms()
 {
     TCNT0 = 131; // Load timer counter register with 0
 
@@ -37,9 +37,6 @@ void blinkWithTimers(void)
     while (1)
     {
         PORTB = PORTB ^ (1 << PB5); // Toggle PB5
-        for (uint8_t i = 0; i < 500; i++)
-        {
-            delay_timer0();
-        }
+        delay_timer0_2ms();
     }
 }

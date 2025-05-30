@@ -9,14 +9,23 @@ Lab 03 - Main
 // Note that: Uncomment the program and its corresponding functions you need to run
 
 extern void blinkWithTimers(void);
-extern void blinkAll(void);
-extern void knightRider_V1(void);
-extern void knightRider_V2(void);
+extern void knightRiderWithInterrupts(void);
+extern void blinkWithLargerDelay(void);
+extern void blinkTwoLEDsWithDiffDelays(void);
 
 int main(void)
 {
   // Lab 3 Part 1
-  blinkWithTimers();
+  // blinkWithTimers();
+
+  // Lab 3 Part 4
+  // knightRiderWithInterrupts();
+
+  // Lab 3 Part 5
+  // blinkWithLargerDelay();
+
+  // Lab 3 Part 6
+  blinkTwoLEDsWithDiffDelays();
 
   return 0;
 }
