@@ -9,78 +9,68 @@ Lab 04 - Part 3
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define DELAY 1000
+#define PLAY_DELAY 2000
+#define PAUSE_DELAY 1000
 
-// Function to set PWM frequency on Timer0 (OC0A - PB3)
-void set_pwm_frequency(uint16_t frequency)
+// Function to initialize PWM with selected prescaler
+void setupPWM(uint8_t prescaler_bits)
 {
-    // Calculate the TOP value for OCR0A
-    // Fast PWM formula: F_pwm = F_CPU / (N * 256)
-    // For sound, we set TOP based on OCR0A value and match frequency.
-    // We’ll approximate frequency via prescaler and OCR0A value.
+    // Set PD6 (OC0A) as output
+    DDRD |= (1 << PD6);
 
-    TCCR0A = (1 << COM0A0) | (1 << WGM01) | (1 << WGM00); // Toggle OC0A, Fast PWM
-    TCCR0B = 0;
+    // Fast PWM mode: WGM02 = 0, WGM01 = 1, WGM00 = 1
+    TCCR0A = (1 << WGM01) | (1 << WGM00);
+    TCCR0A &= ~(1 << WGM02);
 
-    if (frequency < 31)
-    {
-        // Too low for Timer0 with reasonable resolution
-        frequency = 31;
-    }
+    // Non-inverting mode
+    TCCR0A |= (1 << COM0A1);
+    TCCR0A &= ~(1 << COM0A0);
 
-    // Prescaler options: 1, 8, 64, 256, 1024
-    uint16_t prescaler;
-    uint8_t cs_bits;
+    // Load prescaler bits
+    TCCR0B = (TCCR0B & 0xF8) | prescaler_bits;
 
-    if (frequency > 4000)
-    {
-        prescaler = 8;
-        cs_bits = (1 << CS01); // prescaler = 8
-    }
-    else if (frequency > 1000)
-    {
-        prescaler = 64;
-        cs_bits = (1 << CS01) | (1 << CS00); // prescaler = 64
-    }
-    else
-    {
-        prescaler = 256;
-        cs_bits = (1 << CS02); // prescaler = 256
-    }
-
-    // Calculate the OCR0A value to set frequency
-    uint16_t ocr_val = (F_CPU / (2UL * prescaler * frequency)) - 1;
-
-    if (ocr_val > 255)
-        ocr_val = 255;
-    OCR0A = (uint8_t)ocr_val;
-
-    // Set prescaler
-    TCCR0B |= cs_bits;
+    // 50% duty cycle
+    OCR0A = 128;
 }
 
+// Function to stop PWM
+void stopPWM()
+{
+    TCCR0B &= 0xF8;       // Stop timer
+    PORTD &= ~(1 << PD6); // Ensure buzzer is low
+}
+
+// Main tone generation loop
 void piezoBuzzer(void)
 {
-    // Define PWM pin (PD6) as O/P
-    DDRD = DDRD | (1 << PD6);
+    DDRB = 0x0F;
 
-    // 4 sound frequencies (in Hz)
-    uint16_t tones[] = {440, 880, 1760, 3520};
-
-    // Set Fast PWM mode: WGM01 = 1, WGM00 = 1
-    TCCR0A = TCCR0A | (1 << WGM01) | (1 << WGM00);
-    TCCR0B = TCCR0B & ~(1 << WGM02);
-
-    // Set Non-Inverting Mode
-    TCCR0A = TCCR0A | (1 << COM0A1);
-    TCCR0A = TCCR0A & ~(1 << COM0A0);
+    PORTB = 0x00;
 
     while (1)
     {
-        for (uint8_t i = 0; i < 4; i++)
-        {
-            set_pwm_frequency(tones[i]);
-            _delay_ms(DELAY);
-        }
+        // Frequency 1: ~61 Hz (Prescaler = 1024)
+        setupPWM(0x05);
+        PORTB = PORTB ^ (1 << PB0);
+        _delay_ms(PLAY_DELAY);
+        PORTB = PORTB ^ (1 << PB0);
+
+        // Frequency 2: ~244 Hz (Prescaler = 256)
+        setupPWM(0x04);
+        PORTB = PORTB ^ (1 << PB1);
+        _delay_ms(PLAY_DELAY);
+        PORTB = PORTB ^ (1 << PB1);
+
+        // Frequency 3: ~977 kHz (Prescaler = 64)
+        setupPWM(0x03);
+        PORTB = PORTB ^ (1 << PB2);
+        _delay_ms(PLAY_DELAY);
+        PORTB = PORTB ^ (1 << PB2);
+
+        // Frequency 4: ~7.8 kHz (Prescaler = 8)
+        setupPWM(0x02);
+        PORTB = PORTB ^ (1 << PB3);
+        _delay_ms(PLAY_DELAY);
+        PORTB = PORTB ^ (1 << PB3);
     }
 }
