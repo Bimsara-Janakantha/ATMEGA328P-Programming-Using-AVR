@@ -15,13 +15,13 @@ extern void piezoBuzzer(void);
 int main(void)
 {
   // Lab 04 Part 1
-  // generatePWM();
+  // fgeneratePWM();
 
   // Lab 04 Part 2
-  // fadeLED();
+  fadeLED();
 
   // Lab 04 Part 3
-  piezoBuzzer();
+  // piezoBuzzer();
 
   return 0;
 }
