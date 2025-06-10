@@ -17,7 +17,7 @@ void timer1_init()
 {
     TCCR1A = 0x00; // Normal mode
     TCCR1B = 0x04; // 256 prescaling
-    TCNT1 = 3036;  // Load timer0 counter register with 131
+    TCNT1 = 3036;  // Load timer0 counter register with 3036
     TIMSK1 = 0x01; // Enable overflow interrupt
 }
 
@@ -25,7 +25,7 @@ void timer1_init()
 /* ISR(TIMER1_OVF_vect)
 {
     PORTB ^= (1 << 5); // Toggle PB5
-    TCNT1 = 3036;      // Load timer0 counter register with 131
+    TCNT1 = 3036;      // Load timer0 counter register with 3036
 } */
 
 void knightRiderWithInterrupts(void)
