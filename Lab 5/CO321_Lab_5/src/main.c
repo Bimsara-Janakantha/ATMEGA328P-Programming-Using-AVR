@@ -14,10 +14,10 @@ extern void LDR(void);
 int main(void)
 {
   // Lab 05 Part 1
-  voltmeter();
+  // voltmeter();
 
   // Lab 05 Part 2
-  // LDR();
+  LDR();
 
   return 0;
 }

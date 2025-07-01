@@ -1,7 +1,12 @@
-#include <avr/io.h>
-#include <util/delay.h>
+/*
+Janakantha S.M.B.G.
+E/20/157
+CO321 - Embedded Systems
+Lab 05 - Part 1
+2025/06/11
+*/
 
-#define BLINK_DELAY_MS 1000
+#include <avr/io.h>
 
 void init_ADC(void)
 {
@@ -15,7 +20,7 @@ void init_ADC(void)
     ADCSRA = ADCSRA | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
 }
 
-uint8_t adc_read(void)
+uint8_t read_ADC(void)
 {
     // Start Conversion
     ADCSRA = ADCSRA | (1 << ADSC);
@@ -46,7 +51,7 @@ void voltmeter(void)
     // Read and Output the result
     while (1)
     {
-        uint8_t adc_value = ADC_read(); // Read value
+        uint8_t adc_value = read_ADC(); // Read value
         PORTD = adc_value;              // Write value
     }
 }
