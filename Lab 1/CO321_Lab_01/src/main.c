@@ -16,7 +16,7 @@ extern void knightRider_V2(void);
 int main(void)
 {
   // Blink LED
-  // blink_led();
+  blink_led();
 
   // Lab_1_Part_1
   // blinkAll();
@@ -25,7 +25,7 @@ int main(void)
   // knightRider_V1();
 
   // Knight Rider Pattern 2
-  knightRider_V2();
+  // knightRider_V2();
 
   return 0;
 }
