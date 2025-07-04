@@ -1,29 +1,32 @@
-/*
-Janakantha S.M.B.G.
-E/20/157
-CO321 - Embedded Systems
-MID EXAMINATION - Main
-2025/07/02
-*/
+// -------------------------------------------------------------
+// University of Peradeniya - Faculty of Engineering
+// Mid-Semester Examination - July 2025
+// CO321 Embedded Systems
+// -------------------------------------------------------------
+// Registration Number: E/XX/XXX
+// -------------------------------------------------------------
 
+// Include library files here
+#include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define BLINK_DELAY_MS 1000
+// Define your global variables/functions here
 
-int main(void)
-{
-  // Define PIN B5 as OUTPUT
-  DDRB = DDRB | (1 << PB5);
 
-  // Set PIN B5 to LOW
-  PORTB = 0x00;
 
-  while (1)
-  {
-    PORTB = PORTB ^ (1 << PB5);
-    _delay_ms(BLINK_DELAY_MS);
-  }
 
-  return 0;
+// Main Function
+int main (void){
+
+}
+
+// External Intererupt 1 Service Routine
+ISR(INT1_vect){
+  
+}
+
+// Timer0 Overflow Interrupt Service Routine
+ISR(TIMER0_OVF_vect){
+
 }
