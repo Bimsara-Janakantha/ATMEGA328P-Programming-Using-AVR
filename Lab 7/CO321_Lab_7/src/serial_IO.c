@@ -40,7 +40,7 @@ void usart_send(char data)
     UDR0 = data;
 }
 
-char usart_recieve(void)
+char usart_receive(void)
 {
     /* Wait for data to be recieved */
     while (!(UCSR0A & (1 << RXC0)))
@@ -70,20 +70,21 @@ void serial_IO(void)
     {
         // Ckeck mode
         usart_print("\r\nEnter the mode (read - 0, write - 1):\r\n");
-        mode = usart_recieve();
+        mode = usart_receive();
 
         // Write Mode
         if (mode == '1')
         {
-            usart_print("Enter sentence (\\r to end):\r\n");
+            usart_print("\r\nEnter sentence (\\r to end):\r\n");
             uint16_t addr = 0;
 
             while (1)
             {
-                char character = usart_recieve();
+                char character = usart_receive();
 
                 if (character == '\r')
                 {
+                    usart_receive();
                     EEPROMwrite(addr++, '\0');
                     break;
                 }
@@ -103,8 +104,11 @@ void serial_IO(void)
             for (uint16_t i = 0; i < 1024; i++)
             {
                 char data = EEPROMread(i);
-                usart_print(data);
+                if (data == '\0')
+                    break;
+                usart_send(data);
             }
+            usart_print("\r\n");
         }
 
         // Invalid Mode

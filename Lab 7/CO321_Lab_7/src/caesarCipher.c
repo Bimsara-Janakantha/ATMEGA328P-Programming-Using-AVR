@@ -5,30 +5,28 @@ CO321 - Embedded Systems
 Lab 07 - Part 3
 2025/07/07
 */
+
 #include <avr/io.h>
 #include <util/delay.h>
 
 #define BUFFER_SIZE 10
-#define WAIT_DELAY 1000
+#define WRITE_DELAY 1000
+#define READ_DELAY 3000
+#define PULSE_DELAY 5
 #define KEY_ADDR 0
 
 // External EEPROM functions
 extern void EEPROMwrite(uint16_t addr, uint8_t data);
 extern uint8_t EEPROMread(uint16_t addr);
 
-// Display string to LCD (placeholder)
-void lcdPrint(const char *msg)
-{
-    // Implement this using your LCD library (e.g., lcd_clear(); lcd_set_cursor(); lcd_print())
-}
+// External LCD Functions
+extern void lcdInit(void);
+extern void printText(const char *msg, uint8_t clm, uint8_t row);
+extern void printChar(const char ch, uint8_t clm, uint8_t row);
 
-// Read character from keypad (placeholder)
-char readKeypad()
-{
-    // Implement this using your keypad driver
-    // Should block until key is pressed
-    return '1';
-}
+// External Keypad functions
+extern void keypadInit(void);
+extern char readChar(void);
 
 // Caesar cipher encryption
 char encrypt(char ch)
@@ -45,89 +43,91 @@ char encrypt(char ch)
 
 void caesarCipher(void)
 {
+    /* initialize display and keypad */
+    lcdInit();
+    keypadInit();
+
     while (1)
     {
-        lcdPrint("0:Set 1:Encrypt");
-        _delay_ms(WAIT_DELAY);
-        lcdPrint("Mode:");
+        printText("0:Set 1:Encrypt", 0, 0);
+        printText("Mode:", 0, 1);
 
-        char mode = readKeypad();
-        _delay_ms(WAIT_DELAY);
+        char mode = readChar();
+        printChar(mode, 6, 1);
+        _delay_ms(WRITE_DELAY);
 
         // Set Key Mode
         if (mode == '0')
         {
-            lcdPrint("New Key (0-9):");
-            char keyChar = readKeypad();
-            _delay_ms(WAIT_DELAY);
+            printText("New Key (0-9):", 0, 0);
+            char keyChar = readChar();
+            printChar(keyChar, 0, 1);
+            _delay_ms(WRITE_DELAY);
 
             if (keyChar >= '0' && keyChar <= '9')
             {
                 uint8_t key = keyChar - '0';
                 EEPROMwrite(KEY_ADDR, key);
-                lcdPrint("Key Saved.");
+                printText("Key Saved.", 0, 0);
             }
             else
             {
-                lcdPrint("Invalid Key!");
+                printText("Invalid Key!", 0, 0);
             }
 
-            _delay_ms(WAIT_DELAY);
+            _delay_ms(READ_DELAY);
         }
 
         // Encrypt Mode
         else if (mode == '1')
         {
-            char buffer[BUFFER_SIZE];
             uint8_t i = 0;
             uint16_t dataAddr = 1; // EEPROM address 0 is for key
 
-            lcdPrint("Enter Msg:");
-            _delay_ms(WAIT_DELAY);
+            printText("Enter Msg:", 0, 0);
+            _delay_ms(PULSE_DELAY);
 
             while (1)
             {
-                char c = readKeypad();
-                _delay_ms(WAIT_DELAY);
+                char c = readChar();
+                _delay_ms(PULSE_DELAY);
 
-                if (c == '*') // End of message
+                if (c == '#') // End of message
                 {
-                    buffer[i] = '\0';
-                    lcdPrint("Encrypted:");
+                    printText("Encrypted:", 0, 0);
 
                     for (uint8_t j = 0; j < i; j++)
                     {
                         char enc = EEPROMread(j + 1); // Skip EEPROM[0]
-                        char str[2] = {enc, '\0'};
-                        lcdPrint(str);
-                        _delay_ms(300);
+                        printChar(enc, j, 1);
+                        _delay_ms(PULSE_DELAY);
                     }
 
                     break;
                 }
 
-                if (i < BUFFER_SIZE)
+                else if (i < BUFFER_SIZE)
                 {
-                    buffer[i] = c;
+                    printChar(c, i, 1);
                     char enc = encrypt(c);
                     EEPROMwrite(dataAddr++, enc);
                     i++;
                 }
                 else
                 {
-                    lcdPrint("Msg too long!");
+                    printText("Msg too long!", 0, 0);
                     break;
                 }
             }
 
-            _delay_ms(WAIT_DELAY);
+            _delay_ms(READ_DELAY);
         }
 
         // Invalid Mode
         else
         {
-            lcdPrint("Invalid Mode!");
-            _delay_ms(WAIT_DELAY);
+            printText("Invalid Mode!", 0, 0);
+            _delay_ms(READ_DELAY);
         }
     }
 }

@@ -9,15 +9,22 @@ Lab 07 - Main
 // Note that: Uncomment the program and its corresponding functions you need to run
 
 extern void serial_IO(void);
-extern void ceaserCiper(void);
+// extern void caesarCipher(void);
+extern void test_lcd(void);
+extern void keyTest(void);
+extern void keypadTest(void);
 
 int main(void)
 {
   // Lab 07 Part 2
-  serial_IO();
+  // serial_IO();
 
   // Lab 07 Part 3
-  // ceaserCiper();
+  caesarCipher();
+
+  // test_lcd();
+  // keyTest();
+  // keypadTest();
 
   return 0;
 }
